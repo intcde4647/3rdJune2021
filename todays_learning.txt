@@ -1,0 +1,351 @@
+Spring, Hibernate =======> these are frameworks......
+
+What is a framework?
+
+Framework will give us API ( Application Programming Interface) and it will
+give us the execution environment.
+In Framework already many implemented codes are there and we try to plug our
+business related customised code to work with implemented code. Advantage being we
+don't have to write the code from scratch which saves time and effort and so the
+application is developed faster.
+
+Collection Framework. In Framework we are given codes related with DS. We dont
+have to code much , we have just worked with the classes and interfaces given. 
+
+
+
+ Dependency Inversion Principle (DIP)
+The Dependency Inversion Principle (DIP) states that high-level modules should not depend upon low-level modules; they should depend on abstractions.
+
+Dependency Injection --------If we have a class A and class B. The object of class A needs object of class 
+B. So we will say class A is dependent on the object of class B. 
+
+
+    public class Address {
+      private int hno;
+      private String locality;
+      private String city;
+       setter/getters
+      }
+ 
+    public class Employee {
+      private int id;
+      private String name;
+      private String desig;
+      private Address address;
+      setters/getters
+     }
+
+
+    public class Main {
+      public static void main(String str[]) {
+        Employee employee=new Employee();
+        employee.setId(1);
+        Address address=new Address();
+        address.setHno(111);
+        employee.setAddresss(address);
+       }
+   }
+  Employee class object is dependent on Address class object.
+-------------------------------------------------------------------------------------------------------
+
+public interface IAddress{}
+
+
+public class Address implements IAddress {
+      private int hno;
+      private String locality;
+      private String city;
+       setter/getters
+      }
+
+public class EmailAddress implements IAddress{
+      private String emailAddress;
+     } 
+
+    public class Employee {
+      private int id;
+      private String name;
+      private String desig;
+      private IAddress address;
+      setters/getters
+     }
+
+
+    public class Main {
+      public static void main(String str[]) {
+        Employee employee=new Employee();
+        employee.setId(1);
+        IAddress address=new Address();// OR IAddress address=new EmailAddress();
+        address.setHno(111);
+        employee.setAddresss(address);
+       }
+   }
+ 
+  ---------------------------------------------------------------------------------------------------
+We should have some tool or mechanism which will see/read/look our code and understand the dependency and 
+accordingly it will induce the dependent object in the code. This concept of of injecting object in the code
+is known as dependency injection and is used extensively in spring.
+--------------------------------------------------------------------------------------
+
+https://spring.io/guides
+https://www.tutorialspoint.com/spring/index.htm
+
+
+The Spring Framework provides a comprehensive programming and configuration model for modern Java-based enterprise applications - on any kind of deployment platform.
+
+A key element of Spring is infrastructural support at the application level: Spring focuses on the "plumbing" of enterprise applications so that teams can focus on application-level business logic, without unnecessary ties to specific deployment environments.
+------------------------------------------------------------------------------------------------
+
+IOC=====> Inversion of Control is also known as Dependency Injection.Dependency injection is a pattern through
+which IOC is implemented and the act of connecting objects with other objects are done. In this entire process
+we have an IOC container object. So practically we have 2 IOC container objects ------>
+
+1) ApplicationContext ( it is much in use as it has more features and capabilities in comparison to BeanFactory)
+2) BeanFactory 
+--------------------------------------------------------------------------------------------------------------
+
+1) For spring related projects we will create a maven project.
+2) As it is a maven project pom.xml will be there ,
+    artifactid, groupid, version, packaging, dependencies. 
+    update with dependency
+    <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.7</version>
+</dependency>
+   
+  </dependencies>
+3) How the ApplicationContext will know the dependencies related information?
+   ans: That info we will provide in a xml file.
+---------------------------------------------------------------------------------------------------------------
+https://mvnrepository.com/
+-----------------------------------------------------------------------
+
+pom.xml
+
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.demo.cts</groupId>
+  <artifactId>springdemo1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</project>
+
+Today for the first spring project we need to have the dependency called spring-context. 
+
+--------------------------------------------------------------------------------------------------------
+pom.xml with the dependency:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.demo.cts</groupId>
+  <artifactId>springdemo1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.7</version>
+</dependency>
+   
+  </dependencies>
+  
+</project>
+
+--------------------------------------------------------------------------------------------------
+beans.xml
+
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id = "hello" class = "springdemo1.Hello"/>
+      
+</beans>
+------------------------------------------------------------------------------------------------------
+package springdemo1;
+
+public class Hello {
+
+	
+	  public String message()
+	  {
+		  return "Hello Friends!!!!";
+	  }
+}
+-------------------------------------------------------------------------------------------------------------
+package springdemo1;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+    // Hello hello=new Hello();
+    // System.out.println(hello.message());
+
+	// STEP1 The container is intialised 
+    // with the configuration file which is containing
+	// the information for the objects/beans
+	ApplicationContext context=new ClassPathXmlApplicationContext("beans.xml");
+	// STEP 2 From the container which is ApplicationContext we are getting an object of Hello Class 
+	     Hello hello=(Hello) context.getBean("hello");
+	     System.out.println(hello.message());
+	}
+
+}
+-------------------------------------------------------------------------------------------------------
+1) Create a maven project.
+2) update pom.xml with the dependency , spring-context.
+pom.xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.cts.demos</groupId>
+  <artifactId>springdemo2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+   <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.7</version>
+</dependency>
+   
+  </dependencies>
+</project>
+
+
+
+3) Create the class for which we are expecting to create a bean.
+package com.cts.demo.model;
+
+public class Student {
+  private int roll;
+  private String name;
+  private int marks;
+public int getRoll() {
+	return roll;
+}
+public void setRoll(int roll) {
+	this.roll = roll;
+}
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public int getMarks() {
+	return marks;
+}
+public void setMarks(int marks) {
+	this.marks = marks;
+}
+  
+}
+
+
+
+4) for the bean configuration xml file which will contain the information of the beans/objects.
+   create it within the resource folder.
+
+beans.xml
+
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id = "stud" class = "com.cts.demo.model.Student">
+      <property name="roll" value="1"/>
+      <property name="name" value="Ajay"/>
+      <property name="marks" value="100"/>
+
+   </bean>
+</beans>
+
+
+
+
+
+5) The main class where er create the object of ApplicationContext and initialise it with the bean configuration.xml.
+
+package com.cts.demo.main;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.cts.demo.model.Student;
+
+public class Main {
+
+	public static void main(String[] args) {
+	
+	ApplicationContext context=new ClassPathXmlApplicationContext("beans.xml");
+        Student student=(Student)context.getBean("stud");
+        System.out.println(student.getRoll());
+        System.out.println(student.getName());
+        System.out.println(student.getMarks());
+               
+	}
+
+}
+
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+Employee having address.
+
+
+    public class Address {
+        private int hno;
+        private String city;
+     }
+
+    public class Employee {
+       private int code;
+       private String name;
+       private Address address;
+     }
+----------------------------------------------------------------------------------------------------------
+ 
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+  
+   <bean id = "address" class = "com.cts.demo.model.Address">
+      <property name="hno" value="111"/>
+      <property name="city" value="Delhi"/>
+   </bean>
+
+   <bean id = "employee" class = "com.cts.demo.model.Employee">
+      <property name="code" value="1"/>
+      <property name="name" value="Ajay"/>
+      <property name="address" ref="address"/>
+
+   </bean>
+</beans>
+
+
+
+
+
